@@ -10,7 +10,10 @@ namespace AnylandMods {
         private int currentPage = 0;
         private int pageCount = 1;
         private List<GameObject> menuItemObjects;
-        public const int ItemsPerPage = 6;
+        public int ItemsPerPage {
+            get => menu.TwoColumns ? 12 : 6;
+        }
+        private TextMesh titleLabel = null;
 
         public MenuDialog()
         {
@@ -49,17 +52,27 @@ namespace AnylandMods {
             if (menu.backButtonAction != null)
                 AddBackButton();
             AddMenuItems();
-            AddDefaultPagingButtons();
+            if (menu.Count > ItemsPerPage) {
+                AddDefaultPagingButtons();
+            }
         }
 
         private void AddMenuItems()
         {
             RemoveMenuItems();
-            AddLabel("Mod Functions", 0, -420, 2.0f, textColor: TextColor.Blue, align: TextAlignment.Center, anchor: TextAnchor.MiddleCenter);
+            titleLabel = AddLabel(Menu.Title, 0, -420, 2.0f, align: TextAlignment.Center, anchor: TextAnchor.MiddleCenter);
             int start = ItemsPerPage * currentPage;
             int end = Math.Min(start + ItemsPerPage, Menu.Count);
             for (int i = start; i < end; ++i) {
-                menuItemObjects.Add(Menu[i].Create(this, 0, 115 * (i - start) - 305));
+                int x, y;
+                if (menu.TwoColumns) {
+                    x = ((i - start) % 2 == 0) ? -225 : 225;
+                    y = 115 * ((i - start) / 2) - 305;  // outermost parentheses are for integer division
+                } else {
+                    x = 0;
+                    y = 115 * (i - start) - 305;
+                }
+                menuItemObjects.Add(Menu[i].Create(this, x, y));
             }
         }
 
@@ -87,6 +100,7 @@ namespace AnylandMods {
                     AddMenuItems();
                     break;
                 case "close":
+                    Menu.TriggerDialogCloseEvent(this);
                     CloseDialog();
                     break;
                 case "back":
@@ -102,6 +116,12 @@ namespace AnylandMods {
                     }
                     break;
             }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            GameObject.Destroy(titleLabel);
+            menu.TriggerDialogDestroyEvent(this);
         }
     }
 }

@@ -36,10 +36,10 @@ namespace AnylandMods
             return (GameObject)typeof(Dialog).GetMethod("SwitchTo", InstanceNonPub).Invoke(dialog, new object[] { dialogType, tabName });
         }
 
-        public static GameObject AddSlider(this Dialog dialog, string valuePrefix = "", string valueSuffix = "", int x = 0, int y = 0, float minValue = 0f, float maxValue = 100f, bool roundValues = false, float value = 0f, Action<float> onValueChange = null, bool showValue = true, float textSizeFactor = 1f)
+        public static DialogSlider AddSlider(this Dialog dialog, string valuePrefix = "", string valueSuffix = "", int x = 0, int y = 0, float minValue = 0f, float maxValue = 100f, bool roundValues = false, float value = 0f, Action<float> onValueChange = null, bool showValue = true, float textSizeFactor = 1f)
         {
             object[] args = new object[] { valuePrefix, valueSuffix, x, y, minValue, maxValue, roundValues, value, onValueChange, showValue, textSizeFactor };
-            return (GameObject)typeof(Dialog).GetMethod("AddSlider", InstanceNonPub).Invoke(dialog, args);
+            return (DialogSlider)typeof(Dialog).GetMethod("AddSlider", InstanceNonPub).Invoke(dialog, args);
         }
 
         public static Hand hand(this Dialog dialog)
@@ -50,6 +50,31 @@ namespace AnylandMods
         public static void SetButtonColor(this Dialog dialog, GameObject button, Color color)
         {
             typeof(Dialog).GetMethod("SetButtonColor", InstanceNonPub).Invoke(dialog, new object[] { button, color });
+        }
+
+        public static GameObject GetUiWrapper(this Dialog dialog)
+        {
+            return (GameObject)typeof(Dialog).GetMethod("GetUiWrapper", InstanceNonPub).Invoke(dialog, new object[] { });
+        }
+
+        public static void SetUiWrapper(this Dialog dialog, GameObject wrapper)
+        {
+            typeof(Dialog).GetMethod("SetUiWrapper", InstanceNonPub).Invoke(dialog, new object[] { wrapper });
+        }
+
+        public static GameObject wrapper(this Dialog dialog)
+        {
+            return (GameObject)typeof(Dialog).GetField("wrapper", InstanceNonPub).GetValue(dialog);
+        }
+
+        public static void wrapper(this Dialog dialog, GameObject wrapper)
+        {
+            typeof(Dialog).GetField("wrapper", InstanceNonPub).SetValue(dialog, wrapper);
+        }
+
+        public static void SetCheckboxState(this Dialog dialog, GameObject part, bool state, bool ignoreIcon = true)
+        {
+            typeof(Dialog).GetMethod("SetCheckboxState", InstanceNonPub).Invoke(dialog, new object[] { part, state, ignoreIcon });
         }
 
         // DialogManager
@@ -124,13 +149,86 @@ namespace AnylandMods
             return (bool)typeof(ThingPartDialog).GetField("showSubThings", InstanceNonPub).GetValue(dialog);
         }
 
+        // MaterialDialog
+
+        public static void AddPropertyButtonsIfNeeded(this MaterialDialog dialog)
+        {
+            typeof(MaterialDialog).GetMethod("AddPropertyButtonsIfNeeded", InstanceNonPub).Invoke(dialog, new object[] { });
+        }
+
+        public static GameObject verticalSide(this MaterialDialog dialog)
+        {
+            return (GameObject)typeof(MaterialDialog).GetField("verticalSide", InstanceNonPub).GetValue(dialog);
+        }
+
+        public static Side side(this MaterialDialog dialog)
+        {
+            return (Side)typeof(MaterialDialog).GetField("side", InstanceNonPub).GetValue(dialog);
+        }
+
+        public static string currentAddedPropertyButtonsListSignature(this MaterialDialog dialog)
+        {
+            return (string)typeof(MaterialDialog).GetField("currentAddedPropertyButtonsListSignature", InstanceNonPub).GetValue(dialog);
+        }
+
+        public static void currentAddedPropertyButtonsListSignature(this MaterialDialog dialog, string signature)
+        {
+            typeof(MaterialDialog).GetField("currentAddedPropertyButtonsListSignature", InstanceNonPub).SetValue(dialog, signature);
+        }
+
+        public static void DeleteTexturePropertyButtons(this MaterialDialog dialog)
+        {
+            typeof(MaterialDialog).GetMethod("DeleteTexturePropertyButtons", InstanceNonPub).Invoke(dialog, new object[] { });
+        }
+
+        public static void DeleteParticleSystemPropertyButtons(this MaterialDialog dialog)
+        {
+            typeof(MaterialDialog).GetMethod("DeleteParticleSystemPropertyButtons", InstanceNonPub).Invoke(dialog, new object[] { });
+        }
+
+        public static void StyleAsPropertyButton(this MaterialDialog dialog, GameObject thisButton)
+        {
+            typeof(MaterialDialog).GetMethod("StyleAsPropertyButton", InstanceNonPub).Invoke(dialog, new object[] { thisButton });
+        }
+
+        public static void AddPropertySideInterface(this MaterialDialog dialog)
+        {
+            typeof(MaterialDialog).GetMethod("AddPropertySideInterface", InstanceNonPub).Invoke(dialog, new object[] { });
+        }
+
+        public static void UpdateSlider(this MaterialDialog dialog, string path)
+        {
+            typeof(MaterialDialog).GetMethod("UpdateSlider", InstanceNonPub).Invoke(dialog, new object[] { path });
+        }
+
+        public static GameObject propertyDot(this MaterialDialog dialog)
+        {
+            return (GameObject)typeof(MaterialDialog).GetField("propertyDot", InstanceNonPub).GetValue(dialog);
+        }
+
+        public static void propertyValueWhenEmptyClickStarted(this MaterialDialog dialog, float value)
+        {
+            typeof(MaterialDialog).GetField("propertyValueWhenEmptyClickStarted", InstanceNonPub).SetValue(dialog, value);
+        }
+
+        // ProfileDialog
+
+        public static Person personThisIsOf(this ProfileDialog dialog)
+        {
+            return (Person)typeof(ProfileDialog).GetField("personThisIsOf", InstanceNonPub).GetValue(dialog);
+        }
+
         // Hand
 
         private static FieldInfo previousPosField;
+        private static FieldInfo handDotNormalPositionField;
+        private static FieldInfo handObjectsWhilePuppeteeringField;
 
         private static void HandInit()
         {
             previousPosField = typeof(Hand).GetField("previousPosition", InstanceNonPub);
+            handDotNormalPositionField = typeof(Hand).GetField("handDotNormalPosition", InstanceNonPub);
+            handObjectsWhilePuppeteeringField = typeof(Hand).GetField("handObjectsWhilePuppeteering", InstanceNonPub);
         }
 
         public static Vector3 previousPosition(this Hand hand)
@@ -141,6 +239,24 @@ namespace AnylandMods
         public static void previousPosition(this Hand hand, Vector3 newPos)
         {
             previousPosField.SetValue(hand, newPos);
+        }
+
+        public static Vector3 handDotNormalPosition(this Hand hand)
+        {
+            return (Vector3)handDotNormalPositionField.GetValue(hand);
+        }
+
+        public static GameObject handObjectsWhilePuppeteering(this Hand hand)
+        {
+            return (GameObject)handObjectsWhilePuppeteeringField.GetValue(hand);
+        }
+
+        // HandDot
+
+        public static void StorePickUpPosition(this HandDot handDot, GameObject gameObject)
+        {
+            DebugLog.Log("{0}.{1}({2})", handDot, typeof(HandDot).GetMethod("StorePickUpPosition", InstanceNonPub).Name, gameObject);
+            typeof(HandDot).GetMethod("StorePickUpPosition", InstanceNonPub).Invoke(handDot, new object[] { gameObject });
         }
     }
 }

@@ -58,7 +58,7 @@ namespace AnylandMods.ScriptableControls {
     public static class HandDotUpdateHook {
         private const float XThreshold = 0.3f;
         private const float YThreshold = 0.3f;
-        private const float ZThreshold = 0.1f;
+        private const float ZThreshold = 0.2f;
         private const float VelocityThreshold1 = 0.7f;
         private const float VelocityThreshold2 = 2.5f;
         private const float FingersClosedThreshold = 0.25f;
@@ -92,6 +92,9 @@ namespace AnylandMods.ScriptableControls {
             if (__instance.controller is null)
                 return;
 
+            float distanceBetweenHands = (__instance.transform.position - __instance.otherDot.transform.position).magnitude;
+            bool apart = distanceBetweenHands >= 1.0f;
+            bool both_together = distanceBetweenHands < 0.1f;
             bool context = CrossDevice.GetPress(__instance.controller, CrossDevice.button_context, __instance.side);
             bool delete = CrossDevice.GetPress(__instance.controller, CrossDevice.button_delete, __instance.side);
             bool fingers = __instance.controller.GetAxis(EVRButtonId.k_EButton_Axis2).x >= FingersClosedThreshold;
@@ -107,10 +110,13 @@ namespace AnylandMods.ScriptableControls {
             }
 
             UInt64 myFlags = 0;
+            if (apart) myFlags |= ControlState.Flags.HandsApart;
+            if (both_together) myFlags |= ControlState.Flags.BothTogether;
             if (context) myFlags |= ControlState.Flags.ContextLaser;
             if (delete) myFlags |= ControlState.Flags.Delete;
             if (fingers) myFlags |= ControlState.Flags.FingersClosed;
             if (grab) myFlags |= ControlState.Flags.Grab;
+            if (holding) myFlags |= ControlState.Flags.Holding;
             if (legs) myFlags |= ControlState.Flags.LegControl;
             if (teleport) myFlags |= ControlState.Flags.TeleportLaser;
             if (trigger) myFlags |= ControlState.Flags.Trigger;
@@ -149,8 +155,7 @@ namespace AnylandMods.ScriptableControls {
             var lastpos = __instance.side == Side.Left ? lastposLeft : lastposRight;
 
             if (Time.time != lasttime) {
-                Vector3 velocity = Vector3.zero;
-                velocity = (handpos_local - lastpos) / (Time.time - lasttime);
+                Vector3 velocity = (handpos_local - lastpos) / (Time.time - lasttime);
 
                 if (velocity.magnitude >= VelocityThreshold1) {
                     myFlags |= ControlState.Flags.Moving;
@@ -167,11 +172,6 @@ namespace AnylandMods.ScriptableControls {
                 } else if (absz > absx && absz > absy) {
                     myFlags |= (velocity.z > 0) ? ControlState.Flags.DirFwd : ControlState.Flags.DirBack;
                 }
-
-                if (teleport) {
-                    DebugLog.LogTemp("t:{0}->{1} p:{2}->{3} v:{4}", lasttime, Time.time, lastpos, handpos_local, velocity);
-                    DebugLog.LogTemp("{0} flags = {1:X}", __instance.side, myFlags);
-                }
             }
 
             if (__instance.side == Side.Left) {
@@ -187,8 +187,8 @@ namespace AnylandMods.ScriptableControls {
             foreach (ControlState test in tests) {
                 test.Update(flags);
                 if (test.Edge) {
-                    DebugLog.LogTemp("{0} Edge {1} {2}", test.State, test.Label, test.Test);
-                    DebugLog.LogTemp("@edge={0:X} req={3:X} lastflags={1:X} pass={2:X}", test.FlagsAtEdge, test.LastFlags, test.AtRequiredEdge, test.RequireEdge);
+                    //DebugLog.LogTemp("{0} Edge {1} {2}", test.State, test.Label, test.Test);
+                    //DebugLog.LogTemp("@edge={0:X} req={3:X} lastflags={1:X} pass={2:X}", test.FlagsAtEdge, test.LastFlags, test.AtRequiredEdge, test.RequireEdge);
                 }
                 if (test.ShouldTrigger) {
                     float t = Time.time;

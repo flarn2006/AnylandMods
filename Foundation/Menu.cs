@@ -60,12 +60,19 @@ namespace AnylandMods {
         private Dictionary<string, MenuItem> itemsById;
         internal ButtonAction backButtonAction = null;
 
+        public event Action<MenuDialog> DialogDestroy;
+        public event Action<MenuDialog> DialogClose;
+
         public int Count => itemsById.Count;
         public bool IsReadOnly => false;
 
-        public Menu()
+        public string Title { get; set; }
+        public bool TwoColumns { get; set; } = false;
+
+        public Menu(string title = "Mod Functions")
         {
             itemsById = new Dictionary<string, MenuItem>();
+            Title = title;
         }
 
         public void SetBackButton(ButtonAction onClickAction)
@@ -152,6 +159,16 @@ namespace AnylandMods {
             get {
                 return itemsById.Values.ElementAt(index);
             }
+        }
+
+        internal void TriggerDialogDestroyEvent(MenuDialog dialog)
+        {
+            DialogDestroy?.Invoke(dialog);
+        }
+
+        internal void TriggerDialogCloseEvent(MenuDialog dialog)
+        {
+            DialogClose?.Invoke(dialog);
         }
     }
 }
