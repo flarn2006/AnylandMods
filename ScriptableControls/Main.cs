@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using UnityModManagerNet;
 using UnityEngine;
 using Valve.VR;
@@ -16,7 +16,7 @@ namespace AnylandMods.ScriptableControls {
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
-            var harmony = HarmonyInstance.Create(modEntry.Info.Id);
+            var harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
             mod = modEntry;
 

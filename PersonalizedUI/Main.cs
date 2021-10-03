@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityModManagerNet;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace AnylandMods.PersonalizedUI
@@ -17,7 +17,7 @@ namespace AnylandMods.PersonalizedUI
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
-            var harmony = HarmonyInstance.Create(modEntry.Info.Id);
+            var harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
             mod = modEntry;
 

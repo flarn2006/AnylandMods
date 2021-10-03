@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
 
@@ -16,9 +16,9 @@ namespace AnylandMods {
             Menu = new Menu();
         }
 
-        private static string MakeUniqueId(HarmonyInstance harmony) => String.Format("{0}.#{1}", harmony.Id, idCount++);
+        private static string MakeUniqueId(Harmony harmony) => String.Format("{0}.#{1}", harmony.Id, idCount++);
 
-        public static MenuButton AddButton(HarmonyInstance harmony, string text, MenuButton.ItemAction onClick = null)
+        public static MenuButton AddButton(Harmony harmony, string text, MenuButton.ItemAction onClick = null)
         {
             MenuButton button = new MenuButton(MakeUniqueId(harmony), text);
             if (onClick != null)
@@ -27,7 +27,7 @@ namespace AnylandMods {
             return button;
         }
 
-        public static MenuCheckbox AddCheckbox(HarmonyInstance harmony, string text, MenuCheckbox.DataItemAction onClick = null)
+        public static MenuCheckbox AddCheckbox(Harmony harmony, string text, MenuCheckbox.DataItemAction onClick = null)
         {
             MenuCheckbox checkbox = new MenuCheckbox(MakeUniqueId(harmony), text);
             if (onClick != null)
