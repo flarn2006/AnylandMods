@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityModManagerNet;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -18,11 +18,11 @@ namespace AnylandMods.AutoBody
         internal static ConfigFile config;
         private static Regex regex, regexForIn;
         internal static Menu pointMenu;
-        internal static HarmonyInstance harmony;
+        internal static Harmony harmony;
 
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
-            harmony = HarmonyInstance.Create(modEntry.Info.Id);
+            harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
             mod = modEntry;
             config = new ConfigFile(mod);

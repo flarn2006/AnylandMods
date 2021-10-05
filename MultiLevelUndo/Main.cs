@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityModManagerNet;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 
 namespace AnylandMods.MultiLevelUndo
 {
@@ -19,7 +19,7 @@ namespace AnylandMods.MultiLevelUndo
         {
             thingPartStateHistory = new HistoryBook<Tuple<ThingPart, int>, ThingPartStateHistoryEntry>(IdentifyThingPartState);
 
-            var harmony = HarmonyInstance.Create(modEntry.Info.Id);
+            var harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
 
             mod = modEntry;
